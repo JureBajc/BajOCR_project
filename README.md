@@ -87,13 +87,16 @@ Sledite meniju za:
 ## Struktura datotek
 
 ```plain
-BajOCR-Processor-v1/
-├── constants.py      # Konfiguracijske konstante
-├── core.py           # Implementacija razreda BajOCR
-├── utils.py          # Pomožne funkcije
-├── main.py           # Interaktivni vmesnik
-├── requirements.txt  # Seznam Python odvisnosti
-└── LICENSE           # Licenca projekta
+BajOCR_project/
+├── .git/               # Git repozitorij
+├── bajocr/             # Moduli BajOCR
+│   ├── __init__.py     # Inicializacija modula
+│   ├── constants.py    # Konfiguracijske konstante
+│   ├── core.py         # Implementacija razreda BajOCR
+│   └── utils.py        # Pomožne funkcije
+├── main.py             # Interaktivni vmesnik
+├── ocr_processor.log   # Log datoteka z zapisi procesov
+└── README.md           # Ta datoteka
 ```
 
 ## Prispevanje
@@ -103,4 +106,3 @@ Prispevki so dobrodošli! Prosim za odprtje issue ali pull request za izboljšav
 ## Licenca
 
 Licencirano pod MIT licenco. Glej `LICENSE` za več informacij.
-
