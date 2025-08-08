@@ -1,0 +1,16 @@
+{
+  "tesseract_path": "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+  "max_workers": 4,
+  "ocr_lang": "slv",
+  "scan_folder": "C:\\Users\\praktikant\\Desktop\\pyTest\\TestData",
+  "extra_args": [
+    "--oem",
+    "1",
+    "--psm",
+    "6",
+    "-c",
+    "user_defined_dpi=300",
+    "-c",
+    "preserve_interword_spaces=1"
+  ]
+}

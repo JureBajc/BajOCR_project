@@ -1,3 +1,0 @@
-2025-08-08 10:11:33,987 - BajOCR - INFO - Using Tesseract at: C:\Program Files\Tesseract-OCR\tesseract.exe
-2025-08-08 10:12:03,475 - BajOCR - INFO - Exporting 8 images to PDF via Tesseract (psm=6, oem=1)
-2025-08-08 10:12:31,069 - PdfExporter - INFO - Saved PDF to: ocr_export.pdf

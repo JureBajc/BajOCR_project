@@ -1,3 +1,4 @@
+import re
 import sys
 from pathlib import Path
 
@@ -12,15 +13,22 @@ IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.tiff', '.bmp']
 LOG_FILE = 'ocr_processor.log'
 
 # Pre-compiled regex patterns for better performance
-import re
 DATE_PATTERNS = [
     re.compile(r'(\d{1,2})[./-](\d{1,2})[./-](\d{4})'),
     re.compile(r'(\d{4})[./-](\d{1,2})[./-](\d{1,2})'),
-    re.compile(r'(\d{1,2})\s+(januar|februar|marec|april|maj|junij|julij|avgust|september|oktober|november|december)\s+(\d{4})', re.IGNORECASE),
+    re.compile(
+        r'(\d{1,2})\s+'
+        r'(januar|februar|marec|april|maj|junij|julij|avgust|'
+        r'september|oktober|november|december)\s+(\d{4})',
+        re.IGNORECASE
+    ),
 ]
 
 NAME_PATTERNS = [
-    re.compile(r'^([A-ZČŠŽĆĐ][a-zčšžćđ]+)\s+([A-ZČŠŽĆĐ][a-zčšžćđ]+)(?:\s+([A-ZČŠŽĆĐ][a-zčšžćđ]+))?$'),
+    re.compile(
+        r'^([A-ZČŠŽĆĐ][a-zčšžćđ]+)\s+([A-ZČŠŽĆĐ][a-zčšžćđ]+)'
+        r'(?:\s+([A-ZČŠŽĆĐ][a-zčšžćđ]+))?$'
+    ),
     re.compile(r'^([A-ZČŠŽĆĐ]{2,})\s+([A-ZČŠŽĆĐ]{2,})$'),
 ]
 
