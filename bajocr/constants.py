@@ -1,28 +1,36 @@
-"""Constants for the BajOCR package."""
-
-from __future__ import annotations
-
+import sys
 from pathlib import Path
 
-DEFAULT_TESSERACT_PATHS: list[str] = [
-    r"C:\Program Files\Tesseract-OCR\tesseract.exe",
-    "/usr/bin/tesseract",
-    "/usr/local/bin/tesseract",
-    "/opt/homebrew/bin/tesseract",
+DEFAULT_TESSERACT_PATHS = [
+    r'C:\Program Files\Tesseract-OCR\tesseract.exe',
+    '/usr/bin/tesseract',
+    '/opt/homebrew/bin/tesseract',
 ]
 
-FILENAME_TEMPLATE: str = "{date}_{entity}.png"
+FILENAME_TEMPLATE = "{date}_{entity}.png"
+IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.tiff', '.bmp']
+LOG_FILE = 'ocr_processor.log'
 
-IMAGE_EXTENSIONS: list[str] = [".png", ".jpg", ".jpeg", ".tiff", ".bmp"]
+# Pre-compiled regex patterns for better performance
+import re
+DATE_PATTERNS = [
+    re.compile(r'(\d{1,2})[./-](\d{1,2})[./-](\d{4})'),
+    re.compile(r'(\d{4})[./-](\d{1,2})[./-](\d{1,2})'),
+    re.compile(r'(\d{1,2})\s+(januar|februar|marec|april|maj|junij|julij|avgust|september|oktober|november|december)\s+(\d{4})', re.IGNORECASE),
+]
 
-LOG_FILE: str = "ocr_processor.log"
+NAME_PATTERNS = [
+    re.compile(r'^([A-ZČŠŽĆĐ][a-zčšžćđ]+)\s+([A-ZČŠŽĆĐ][a-zčšžćđ]+)(?:\s+([A-ZČŠŽĆĐ][a-zčšžćđ]+))?$'),
+    re.compile(r'^([A-ZČŠŽĆĐ]{2,})\s+([A-ZČŠŽĆĐ]{2,})$'),
+]
 
-DEFAULT_LOG_LEVEL: str = "INFO"
+NAME_INDICATORS = [
+    'priimek in ime', 'ime in priimek', 'ime:', 'priimek:',
+    'podpisnik', 'podpisuje', 'izvršitelj', 'direktor', 'vodja'
+]
 
-DEFAULT_LANG: str = "slv"
-
-# Preprocessing config
-MAX_IMAGE_SIZE: int = 2000  # max width/height for resize
-CONTRAST_FACTOR: float = 1.5
-SHARPNESS_FACTOR: float = 1.2
-DEFAULT_SCAN_FOLDER: Path = Path.home() / "Desktop" / "pyTest" / "TestData"
+MONTH_MAP = {
+    'januar': '01', 'februar': '02', 'marec': '03', 'april': '04',
+    'maj': '05', 'junij': '06', 'julij': '07', 'avgust': '08',
+    'september': '09', 'oktober': '10', 'november': '11', 'december': '12'
+}
