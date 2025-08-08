@@ -1,41 +1,88 @@
+"""Utility functions: logging setup, image preprocessing, and helpers."""
+from __future__ import annotations
+
 import logging
-import sys
-from PIL import Image, ImageEnhance, ImageFilter
+import os
+from pathlib import Path
+from typing import Optional
 
-try:
-    from .constants import LOG_FILE
-except ImportError:
-    LOG_FILE = 'ocr_processor.log'
+from PIL import Image, ImageEnhance
 
-def setup_logging(log_level):
+from .constants import (
+    LOG_FILE,
+    DEFAULT_LOG_LEVEL,
+    MAX_IMAGE_SIZE,
+    CONTRAST_FACTOR,
+    SHARPNESS_FACTOR,
+    DEFAULT_TESSERACT_PATHS,
+)
+
+
+def setup_logging(level: str = DEFAULT_LOG_LEVEL) -> None:
+    """Configure module-wide logging.
+
+    Args:
+        level: Logging level as a string, e.g. "INFO" or "DEBUG".
+    """
+    numeric = getattr(logging, level.upper(), logging.INFO)
     logging.basicConfig(
-        level=log_level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=numeric,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[
-            logging.FileHandler(LOG_FILE, encoding='utf-8'),
-            logging.StreamHandler(sys.stdout)
-        ]
+            logging.FileHandler(LOG_FILE, encoding="utf-8"),
+            logging.StreamHandler(),
+        ],
     )
 
-def preprocess_image(image):
+
+def find_tesseract_executable(explicit_path: Optional[str | Path] = None) -> Optional[Path]:
+    """Find a Tesseract executable path.
+
+    Args:
+        explicit_path: If provided, this path is validated and returned if executable.
+
+    Returns:
+        Path to Tesseract executable, or None if not found.
+    """
+    candidates: list[Path] = []
+    if explicit_path:
+        candidates.append(Path(explicit_path))
+    candidates.extend(Path(p) for p in DEFAULT_TESSERACT_PATHS)
+
+    for cand in candidates:
+        if cand.exists() and os.access(cand, os.X_OK):
+            return cand
+    return None
+
+
+def preprocess_image(image: Image.Image) -> Image.Image:
+    """Preprocess an image for OCR: resize, grayscale, contrast, sharpness.
+
+    Args:
+        image: PIL image.
+
+    Returns:
+        Preprocessed PIL image.
+    """
     try:
-        width, height = image.size
-        max_size = 2000
-        if width > max_size or height > max_size:
-            if width > height:
-                new_width = max_size
-                new_height = int(height * max_size / width)
+        im = image
+        # Resize if needed
+        w, h = im.size
+        if max(w, h) > MAX_IMAGE_SIZE:
+            if w >= h:
+                new_w = MAX_IMAGE_SIZE
+                new_h = int(h * MAX_IMAGE_SIZE / w)
             else:
-                new_height = max_size
-                new_width = int(width * max_size / height)
-            image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-        if image.mode != 'L':
-            image = image.convert('L')
-        enhancer = ImageEnhance.Contrast(image)
-        image = enhancer.enhance(1.5)
-        sharpness_enhancer = ImageEnhance.Sharpness(image)
-        image = sharpness_enhancer.enhance(1.2)
-        return image
-    except Exception as e:
-        logging.getLogger(__name__).error(f"Napaka pri predprocesiranju slike: {e}")
+                new_h = MAX_IMAGE_SIZE
+                new_w = int(w * MAX_IMAGE_SIZE / h)
+            im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
+
+        if im.mode != "L":
+            im = im.convert("L")
+
+        im = ImageEnhance.Contrast(im).enhance(CONTRAST_FACTOR)
+        im = ImageEnhance.Sharpness(im).enhance(SHARPNESS_FACTOR)
+        return im
+    except Exception as exc:
+        logging.getLogger(__name__).exception("Error during preprocessing: %s", exc)
         return image
