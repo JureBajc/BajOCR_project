@@ -1,5 +1,2 @@
-pillow==11.3.0
-pytesseract==0.3.13
-pypdf==5.9.0
-pytest==8.4.1
-pytest-mock==3.14.1
+pytesseract>=0.3.13
+Pillow>=11.3.0
