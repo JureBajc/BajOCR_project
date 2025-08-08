@@ -29,7 +29,7 @@ def _convert_image_to_pdf(
     tesseract_path: Optional[str],
     lang: str,
     extra_args: List[str]
-) -> Tuple[str, bool, str, float]:  # <--- Dodan čas
+) -> Tuple[str, bool, str, float]:
     start = time.time()
     try:
         if tesseract_path:
@@ -38,17 +38,14 @@ def _convert_image_to_pdf(
         img = Image.open(img_path)
         processed_img = preprocess_image(img.copy())
 
-        # Extract text for naming
         text = pytesseract.image_to_string(processed_img, lang=lang, config=' '.join(extra_args))
         from .core import extract_date_worker, extract_name_worker
         date = extract_date_worker(text)
         entity = extract_name_worker(text)
 
-        # Construct filename
         new_filename = FILENAME_TEMPLATE.replace('.png', '.pdf').format(date=date, entity=entity)
         pdf_path = Path(img_path).with_name(new_filename)
 
-        # Generate PDF
         pdf_bytes = pytesseract.image_to_pdf_or_hocr(
             img, extension='pdf', lang=lang, config=' '.join(extra_args)
         )
@@ -67,19 +64,15 @@ class BajOCR:
     """
 
     def __init__(self, tesseract_path=None, log_level=logging.INFO):
-        # Setup Tesseract path and store it
         self.tesseract_path = self._setup_tesseract_path(tesseract_path)
-        # Setup logging
         setup_logging(log_level)
         self.logger = logging.getLogger(__name__)
-        # Initialize stats and locks
         self.processed_files = set()
         self._reset_stats()
-        # Cache current date for performance
         self._current_date = datetime.today().strftime("%d-%m-%Y")
 
     def _setup_tesseract_path(self, tesseract_path):
-        """Setup Tesseract path with caching and return the path."""
+        """set Tesseract path z caching in return path."""
         if tesseract_path:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
             return tesseract_path
@@ -110,8 +103,9 @@ class BajOCR:
         file_extensions: Optional[List[str]] = None,
     ) -> bool:
         """
-        Convert each image in `folder_path` into its own searchable PDF in parallel.
-        Returns True if at least one PDF was created successfully.
+        vsako sliko v mapi pretvori v svoj PDF z iskalnim besedilom (searchable PDF), vzporedno
+
+vrne True če je bil vsaj en PDF uspešno ustvarjen
         """
         folder = Path(folder_path)
         if not folder.is_dir():
@@ -183,7 +177,7 @@ class BajOCR:
             self.logger.error(f"Mapa ne obstaja: {folder_path}")
             return False
 
-        # Get all image files
+        # Get all
         image_files = [
             f for f in folder_path.iterdir()
             if f.is_file() and f.suffix.lower() in file_extensions
@@ -211,7 +205,6 @@ class BajOCR:
         successful = 0
         failed = 0
 
-        # Use ProcessPoolExecutor for CPU-bound OCR tasks
         with ProcessPoolExecutor(max_workers=max_workers) as executor:
             future_to_file = {
                 executor.submit(process_image_worker, str(fp)): fp
@@ -241,7 +234,7 @@ class BajOCR:
         return successful > 0
 
     def print_summary_enhanced(self):
-        """Print enhanced processing summary"""
+        """print processing summary"""
         total_time = self.stats['end_time'] - self.stats['start_time']
         avg_time = total_time / self.stats['processed'] if self.stats['processed'] > 0 else 0
         success_rate = (self.stats['successful'] / self.stats['processed'] * 100) if self.stats['processed'] > 0 else 0
@@ -262,7 +255,7 @@ class BajOCR:
         print(f"{'=' * 50}")
 
     def save_report(self, folder_path, results):
-        """Save detailed processing report"""
+        """save proces report"""
         report = {
             'timestamp': datetime.now().isoformat(),
             'folder': str(folder_path),
@@ -280,7 +273,7 @@ class BajOCR:
             self.logger.error(f"Napaka pri shranjevanju poročila: {e}")
 
     def test_single_file(self, folder_path):
-        """Test single file with detailed output"""
+        """Test single file output"""
         folder_path = Path(folder_path)
         test_file = None
 
@@ -319,17 +312,15 @@ class BajOCR:
         return process_image_worker(file_path, self.tesseract_path)
 
 
-# Worker function for ProcessPoolExecutor (must be at module level)
+# Worker func za model levl ProcessPoolExecutor 
 def process_image_worker(file_path, tesseract_path=None):
-    """Worker function for processing images in separate processes"""
+    """Worker function locen proces"""
     start_time = time.time()
     filename = os.path.basename(file_path)
 
-    # Set up Tesseract path in each worker process
     if tesseract_path:
         pytesseract.pytesseract.tesseract_cmd = tesseract_path
     else:
-        # Try default paths in each worker
         for path in DEFAULT_TESSERACT_PATHS:
             if os.path.exists(path):
                 pytesseract.pytesseract.tesseract_cmd = path
@@ -344,7 +335,6 @@ def process_image_worker(file_path, tesseract_path=None):
         }
 
     try:
-        # Process image
         with Image.open(file_path) as image:
             processed_image = preprocess_image(image.copy())
             text = pytesseract.image_to_string(
@@ -353,11 +343,9 @@ def process_image_worker(file_path, tesseract_path=None):
                 config='--psm 6 --oem 3'
             )
 
-        # Extract information using the same logic
         date = extract_date_worker(text)
         entity = extract_name_worker(text)
 
-        # Generate new filename
         new_name = FILENAME_TEMPLATE.format(date=date, entity=entity)
         new_path = os.path.join(os.path.dirname(file_path), new_name)
 
@@ -371,7 +359,6 @@ def process_image_worker(file_path, tesseract_path=None):
             if counter > 100:
                 new_path = f"{base}_{int(time.time()*1000)%10000}{ext}"
 
-        # Rename file
         os.rename(file_path, new_path)
 
         processing_time = time.time() - start_time
@@ -395,7 +382,7 @@ def process_image_worker(file_path, tesseract_path=None):
         }
 
 def extract_date_worker(text):
-    """Worker function for date extraction"""
+    """Worker za datum ext"""
     current_date = datetime.today().strftime("%d-%m-%Y")
 
     for i, pattern in enumerate(DATE_PATTERNS):
@@ -412,10 +399,9 @@ def extract_date_worker(text):
     return current_date
 
 def extract_name_worker(text):
-    """Worker function for name extraction"""
+    """Worker za ime select"""
     lines = [line.strip() for line in text.splitlines() if line.strip()]
 
-    # Check lines with name indicators first
     for i, line in enumerate(lines[:20]):
         line_lower = line.lower()
         for indicator in NAME_INDICATORS:
@@ -446,7 +432,7 @@ def extract_name_worker(text):
     return "NEZNANO_IME"
 
 def extract_name_from_text_worker(text):
-    """Worker helper function to extract name from text"""
+    """Worker extract ime iz besedila"""
     for pattern in NAME_PATTERNS:
         match = pattern.match(text)
         if match:

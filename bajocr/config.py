@@ -20,10 +20,10 @@ class Config:
     @classmethod
     def load(cls) -> "Config":
         """
-        Load configuration from disk, or return defaults.
+        Naloži konfiguracijo iz datoteke ali uporabi privzete nastavitve.
 
-        If no config file exists, uses default Tesseract path (first existing),
-        CPU count for max_workers, and empty scan_folder.
+        Če datoteka ne obstaja, uporabi prvi veljaven Tesseract path število jeder CPU
+        za procesiranje in prazno mapo za skeniranje
         """
         if _CONFIG_FILE.exists():
             try:
@@ -45,7 +45,7 @@ class Config:
         )
 
     def save(self) -> None:
-        """Save current config to disk as JSON."""
+        """Shrane trenutn config JSON"""
         try:
             _CONFIG_FILE.write_text(
                 json.dumps(asdict(self), indent=2),

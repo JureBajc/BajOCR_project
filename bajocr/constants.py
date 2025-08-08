@@ -10,7 +10,6 @@ FILENAME_TEMPLATE = "{date}_{entity}.png"
 IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.tiff', '.bmp']
 LOG_FILE = 'ocr_processor.log'
 
-# Pre-compiled regex patterns for better performance
 DATE_PATTERNS = [
     re.compile(r'(\d{1,2})[./-](\d{1,2})[./-](\d{4})'),
     re.compile(r'(\d{4})[./-](\d{1,2})[./-](\d{1,2})'),

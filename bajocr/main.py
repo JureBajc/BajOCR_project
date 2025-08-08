@@ -13,7 +13,7 @@ setup_logging(log_level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def prompt_int(prompt: str, default: int, min_val: int = 1, max_val: Optional[int] = None) -> int:
-    """Prompt the user for an integer within bounds, with default."""
+    """int z menu bounds."""
     while True:
         resp = input(f"{prompt} [{default}]: ").strip()
         if not resp:
@@ -27,7 +27,7 @@ def prompt_int(prompt: str, default: int, min_val: int = 1, max_val: Optional[in
             print(f"Vnesi število med {min_val} in {max_val or '∞'}.")
 
 def konfiguriraj(cfg: Config) -> Config:
-    """Interactive configuration menu."""
+    """menu."""
     print("\n--- Konfiguriraj BajOCR ---")
     # Tesseract path
     path = input(f"Pot do Tesseract.exe [{cfg.tesseract_path or 'ni nastavljeno'}]: ").strip()
@@ -58,7 +58,7 @@ def konfiguriraj(cfg: Config) -> Config:
     return cfg
 
 def main() -> None:
-    """Glavna funkcija z razširjenim menijem in konfiguracijo."""
+    """glavna funkcija menia."""
     cfg = Config.load()
     pytesseract.pytesseract.tesseract_cmd = cfg.tesseract_path
     processor = BajOCR(tesseract_path=cfg.tesseract_path)

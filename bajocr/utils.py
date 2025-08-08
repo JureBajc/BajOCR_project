@@ -6,11 +6,10 @@ try:
 except ImportError:
     LOG_FILE = 'ocr_processor.log'
 
-# Cache for setup_logging to avoid multiple setups
 _logging_setup = False
 
 def setup_logging(log_level):
-    """Configure root logger to file + stdout."""
+    """conf root logger na file + stdout."""
     global _logging_setup
     if _logging_setup:
         return
@@ -26,7 +25,7 @@ def setup_logging(log_level):
     _logging_setup = True
 
 def preprocess_image(image, max_size=2000):
-    """Optimized image preprocessing with resizing, contrast, and sharpness."""
+    """preprocesing giga pocasno."""
     try:
         width, height = image.size
         if width > max_size or height > max_size:
