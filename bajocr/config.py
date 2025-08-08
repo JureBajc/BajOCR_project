@@ -3,7 +3,6 @@ import logging
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import List, Optional
-
 from .constants import DEFAULT_TESSERACT_PATHS
 
 _LOGGER = logging.getLogger(__name__)

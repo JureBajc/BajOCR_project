@@ -1,6 +1,4 @@
 import re
-import sys
-from pathlib import Path
 
 DEFAULT_TESSERACT_PATHS = [
     r'C:\Program Files\Tesseract-OCR\tesseract.exe',

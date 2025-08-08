@@ -3,9 +3,7 @@ import sys
 import logging
 import multiprocessing
 from typing import Optional
-
 import pytesseract
-
 from .config import Config
 from .core import BajOCR
 from .utils import setup_logging

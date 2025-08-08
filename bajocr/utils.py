@@ -1,7 +1,6 @@
 import logging
 import sys
 from PIL import Image, ImageEnhance
-
 try:
     from .constants import LOG_FILE
 except ImportError:

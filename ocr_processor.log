@@ -54,3 +54,4 @@ AttributeError: 'BajOCR' object has no attribute 'process_single_image'
 2025-08-08 14:13:42,963 - bajocr.core - INFO - PDF created: 08-08-2025_Škabar_Marija_1.png → 08-08-2025_Škabar_Marija.pdf
 2025-08-08 14:13:43,263 - bajocr.core - INFO - PDF created: 08-08-2025_Šikuleski_Damjan_1.png → 08-08-2025_Šikuleski_Damjan.pdf
 2025-08-08 14:13:43,643 - bajocr.core - INFO - PDF created: 08-08-2025_Šušteršič_Lovro_1.png → 08-08-2025_Šušteršič_Lovro.pdf
+2025-08-08 14:44:22,045 - bajocr.config - INFO - Configuration loaded from config.json
