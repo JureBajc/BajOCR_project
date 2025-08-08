@@ -1,0 +1,56 @@
+2025-08-08 14:04:54,282 - bajocr.config - INFO - Configuration loaded from config.json
+2025-08-08 14:05:00,257 - __main__ - CRITICAL - Kritična napaka: 'BajOCR' object has no attribute 'process_single_image'
+Traceback (most recent call last):
+  File "C:\Users\praktikant\Desktop\pyTest\BajOCR_project\bajocr\main.py", line 126, in <module>
+    main()
+  File "C:\Users\praktikant\Desktop\pyTest\BajOCR_project\bajocr\main.py", line 89, in main
+    processor.test_single_file(cfg.scan_folder)
+  File "C:\Users\praktikant\Desktop\pyTest\BajOCR_project\bajocr\core.py", line 302, in test_single_file
+    result = self.process_single_image(str(test_file))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'BajOCR' object has no attribute 'process_single_image'
+2025-08-08 14:09:16,171 - bajocr.config - INFO - Configuration loaded from config.json
+2025-08-08 14:10:56,804 - bajocr.core - INFO - Poročilo shranjeno: C:\Users\praktikant\Desktop\pyTest\TestData\ocr_report_20250808_141056.json
+2025-08-08 14:11:44,724 - bajocr.core - INFO - PDF created: 08-08-2025_Bezjak_Vesna_1.png → 08-08-2025_Bezjak_Vesna.pdf
+2025-08-08 14:11:45,024 - bajocr.core - INFO - PDF created: 08-08-2025_Bajc_Jure_1.png → 08-08-2025_Bajc_Jure.pdf
+2025-08-08 14:11:45,206 - bajocr.core - INFO - PDF created: 05-08-4035_Vendramin_Tjaša.png → 05-08-4035_Vendramin_Tjaša.pdf
+2025-08-08 14:11:45,275 - bajocr.core - INFO - PDF created: 08-08-2025_Cavdek_Alenka_Bratina_1.png → 08-08-2025_Čavdek_Alenka_Bratina.pdf
+2025-08-08 14:11:56,629 - bajocr.core - INFO - PDF created: 08-08-2025_Fatur_Peter_1.png → 08-08-2025_Fatur_Peter.pdf
+2025-08-08 14:11:56,861 - bajocr.core - INFO - PDF created: 08-08-2025_Cotič_Nina_1.png → 08-08-2025_Cotič_Nina.pdf
+2025-08-08 14:11:56,953 - bajocr.core - INFO - PDF created: 08-08-2025_Fajdiga_Aljaž_1.png → 08-08-2025_Fajdiga_Aljaž.pdf
+2025-08-08 14:11:57,260 - bajocr.core - INFO - PDF created: 08-08-2025_Godnič_Chris_1.png → 08-08-2025_Godnič_Chris.pdf
+2025-08-08 14:12:07,682 - bajocr.core - INFO - PDF created: 08-08-2025_Kofol_Uroš_1.png → 08-08-2025_Kofol_Uroš.pdf
+2025-08-08 14:12:08,405 - bajocr.core - INFO - PDF created: 08-08-2025_Hrast_Tjaša_1.png → 08-08-2025_Hrast_Tjaša.pdf
+2025-08-08 14:12:08,481 - bajocr.core - INFO - PDF created: 08-08-2025_Koncut_Jani_1.png → 08-08-2025_Koncut_Jani.pdf
+2025-08-08 14:12:08,990 - bajocr.core - INFO - PDF created: 08-08-2025_Kolman_Urban_1.png → 08-08-2025_Kolman_Urban.pdf
+2025-08-08 14:12:19,223 - bajocr.core - INFO - PDF created: 08-08-2025_Košuta_Dominik_1.png → 08-08-2025_Košuta_Dominik.pdf
+2025-08-08 14:12:19,914 - bajocr.core - INFO - PDF created: 08-08-2025_Kunst_Danijela_1.png → 08-08-2025_Kunst_Danijela.pdf
+2025-08-08 14:12:20,529 - bajocr.core - INFO - PDF created: 08-08-2025_Kulot_Matevž_1.png → 08-08-2025_Kulot_Matevž.pdf
+2025-08-08 14:12:21,186 - bajocr.core - INFO - PDF created: 08-08-2025_Lancner_Kristina_Zorzut_1.png → 08-08-2025_Lancner_Kristina_Zorzut.pdf
+2025-08-08 14:12:30,695 - bajocr.core - INFO - PDF created: 08-08-2025_Lapanje_Manca_1.png → 08-08-2025_Lapanje_Manca.pdf
+2025-08-08 14:12:31,348 - bajocr.core - INFO - PDF created: 08-08-2025_Martelanc_Matej_1.png → 08-08-2025_Martelanc_Matej.pdf
+2025-08-08 14:12:31,594 - bajocr.core - INFO - PDF created: 08-08-2025_Lavrenčič_Jonatan_1.png → 08-08-2025_Lavrenčič_Jonatan.pdf
+2025-08-08 14:12:32,661 - bajocr.core - INFO - PDF created: 08-08-2025_Leban_Katjuša_1.png → 08-08-2025_Leban_Katjuša.pdf
+2025-08-08 14:12:42,221 - bajocr.core - INFO - PDF created: 08-08-2025_Močnik_Anita_1.png → 08-08-2025_Močnik_Anita.pdf
+2025-08-08 14:12:42,817 - bajocr.core - INFO - PDF created: 08-08-2025_Pahor_Gaja_1.png → 08-08-2025_Pahor_Gaja.pdf
+2025-08-08 14:12:43,150 - bajocr.core - INFO - PDF created: 08-08-2025_Paglovec_Jurij_1.png → 08-08-2025_Paglovec_Jurij.pdf
+2025-08-08 14:12:43,667 - bajocr.core - INFO - PDF created: 08-08-2025_Pahor_Primož_1.png → 08-08-2025_Pahor_Primož.pdf
+2025-08-08 14:12:53,304 - bajocr.core - INFO - PDF created: 08-08-2025_Pavlovič_Kristina_1.png → 08-08-2025_Pavlovič_Kristina.pdf
+2025-08-08 14:12:54,039 - bajocr.core - INFO - PDF created: 08-08-2025_Peternel_Jure_1.png → 08-08-2025_Peternel_Jure.pdf
+2025-08-08 14:12:55,206 - bajocr.core - INFO - PDF created: 08-08-2025_Petrovčič_Jernej_1.png → 08-08-2025_Petrovčič_Jernej.pdf
+2025-08-08 14:12:55,684 - bajocr.core - INFO - PDF created: 08-08-2025_Pipan_Aleksander_1.png → 08-08-2025_Pipan_Aleksander.pdf
+2025-08-08 14:13:04,937 - bajocr.core - INFO - PDF created: 08-08-2025_Plesničar_Aleš_1.png → 08-08-2025_Plesničar_Aleš.pdf
+2025-08-08 14:13:05,895 - bajocr.core - INFO - PDF created: 08-08-2025_Puhalič_David_1.png → 08-08-2025_Puhalič_David.pdf
+2025-08-08 14:13:07,576 - bajocr.core - INFO - PDF created: 08-08-2025_Reškovac_Primož_1.png → 08-08-2025_Reškovac_Primož.pdf
+2025-08-08 14:13:08,366 - bajocr.core - INFO - PDF created: 08-08-2025_Rupnik_Emanuela_1.png → 08-08-2025_Rupnik_Emanuela.pdf
+2025-08-08 14:13:18,086 - bajocr.core - INFO - PDF created: 08-08-2025_Seravalli_Paolo_1.png → 08-08-2025_Seravalli_Paolo.pdf
+2025-08-08 14:13:18,160 - bajocr.core - INFO - PDF created: 08-08-2025_Simčič_Vasja_1.png → 08-08-2025_Simčič_Vasja.pdf
+2025-08-08 14:13:20,032 - bajocr.core - INFO - PDF created: 08-08-2025_Sirk_Martina_1.png → 08-08-2025_Sirk_Martina.pdf
+2025-08-08 14:13:21,033 - bajocr.core - INFO - PDF created: 08-08-2025_Stres_Luka_1.png → 08-08-2025_Stres_Luka.pdf
+2025-08-08 14:13:31,546 - bajocr.core - INFO - PDF created: 08-08-2025_Vuga_Miloš_1.png → 08-08-2025_Vuga_Miloš.pdf
+2025-08-08 14:13:32,164 - bajocr.core - INFO - PDF created: 08-08-2025_Zupančič_Aleš_1.png → 08-08-2025_Zupančič_Aleš.pdf
+2025-08-08 14:13:33,643 - bajocr.core - INFO - PDF created: 08-08-2025_Trebše_Vido_1.png → 08-08-2025_Trebše_Vido.pdf
+2025-08-08 14:13:33,911 - bajocr.core - INFO - PDF created: 08-08-2025_Šfiligoj_Peter_1.png → 08-08-2025_Šfiligoj_Peter.pdf
+2025-08-08 14:13:42,963 - bajocr.core - INFO - PDF created: 08-08-2025_Škabar_Marija_1.png → 08-08-2025_Škabar_Marija.pdf
+2025-08-08 14:13:43,263 - bajocr.core - INFO - PDF created: 08-08-2025_Šikuleski_Damjan_1.png → 08-08-2025_Šikuleski_Damjan.pdf
+2025-08-08 14:13:43,643 - bajocr.core - INFO - PDF created: 08-08-2025_Šušteršič_Lovro_1.png → 08-08-2025_Šušteršič_Lovro.pdf

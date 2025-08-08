@@ -101,6 +101,7 @@ class BajOCR:
             'end_time': None
         }
 
+    
     def convert_folder_to_searchable_pdf(
         self,
         folder_path: str,
@@ -313,6 +314,11 @@ class BajOCR:
             print(f"   {result['text_preview']}")
         else:
             print(f"NAPAKA: {result.get('error')}")
+
+    def process_single_image(self, file_path: str):
+        """Wrapper za testiranje ene slike (interno uporablja worker logiko)."""
+        return process_image_worker(file_path, self.tesseract_path)
+
 
 # Worker function for ProcessPoolExecutor (must be at module level)
 def process_image_worker(file_path, tesseract_path=None):
