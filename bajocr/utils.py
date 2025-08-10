@@ -1,5 +1,7 @@
 import logging
 import sys
+import re
+from pathlib import Path
 from PIL import Image, ImageEnhance
 try:
     from .constants import LOG_FILE
@@ -23,6 +25,28 @@ def setup_logging(log_level):
         ]
     )
     _logging_setup = True
+
+def sanitize_filename(name: str) -> str:
+    """sanitize filename chars; keep it simple."""
+    # replace path separators and illegal chars on common OS
+    name = re.sub(r'[\\/:*?"<>|]+', '_', name)
+    # collapse whitespace
+    name = re.sub(r'\s+', ' ', name).strip()
+    # avoid empty
+    return name or 'NEZNANO'
+
+def ensure_unique_path(path: Path) -> Path:
+    """ensure path uniqueness by appending counters."""
+    if not path.exists():
+        return path
+    base = path.with_suffix('')
+    ext = path.suffix
+    for i in range(1, 101):
+        candidate = Path(f"{base}_{i}{ext}")
+        if not candidate.exists():
+            return candidate
+    # last resort timestamp
+    return Path(f"{base}_{int(__import__('time').time()*1000)%10000}{ext}")
 
 def preprocess_image(image, max_size=2000):
     """preprocesing giga pocasno."""

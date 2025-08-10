@@ -1,8 +1,8 @@
 {
   "tesseract_path": "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
-  "max_workers": 4,
+  "max_workers": 16,
   "ocr_lang": "slv",
-  "scan_folder": "C:\\Users\\praktikant\\Desktop\\pyTest\\TestData",
+  "scan_folder": "C:\\Users\\jureb\\Desktop\\projekti\\APK\\BajOCR_project\\Testi",
   "extra_args": [
     "--oem",
     "1",

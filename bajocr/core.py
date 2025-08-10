@@ -20,7 +20,7 @@ from .constants import (
     NAME_INDICATORS,
     MONTH_MAP,
 )
-from .utils import setup_logging, preprocess_image
+from .utils import setup_logging, preprocess_image, sanitize_filename, ensure_unique_path
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,29 +35,31 @@ def _convert_image_to_pdf(
         if tesseract_path:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
-        img = Image.open(img_path)
-        processed_img = preprocess_image(img.copy())
+        # Open with context manager
+        with Image.open(img_path) as img:
+            processed_img = preprocess_image(img.copy())
+            text = pytesseract.image_to_string(processed_img, lang=lang, config=' '.join(extra_args))
 
-        text = pytesseract.image_to_string(processed_img, lang=lang, config=' '.join(extra_args))
-        from .core import extract_date_worker, extract_name_worker
-        date = extract_date_worker(text)
-        entity = extract_name_worker(text)
+            # call local helpers (defined below)
+            date = extract_date_worker(text)
+            entity = extract_name_worker(text) or "NEZNANO_IME"
 
-        new_filename = FILENAME_TEMPLATE.replace('.png', '.pdf').format(date=date, entity=entity)
-        pdf_path = Path(img_path).with_name(new_filename)
+            filename_pdf = FILENAME_TEMPLATE.replace('.png', '.pdf').format(date=date, entity=entity)
+            filename_pdf = sanitize_filename(filename_pdf)
+            pdf_path = ensure_unique_path(Path(img_path).with_name(filename_pdf))
 
-        pdf_bytes = pytesseract.image_to_pdf_or_hocr(
-            img, extension='pdf', lang=lang, config=' '.join(extra_args)
-        )
-        with open(pdf_path, 'wb') as f:
-            f.write(pdf_bytes)
+            pdf_bytes = pytesseract.image_to_pdf_or_hocr(
+                img, extension='pdf', lang=lang, config=' '.join(extra_args)
+            )
+            with open(pdf_path, 'wb') as f:
+                f.write(pdf_bytes)
 
         elapsed = time.time() - start
         return img_path, True, str(pdf_path), elapsed
 
     except Exception as e:
         return img_path, False, str(e), 0.0
-    
+
 class BajOCR:
     """
     Optimized BAJO-grade OCR processor za interno uporabo v podjetju.
@@ -93,7 +95,6 @@ class BajOCR:
             'end_time': None
         }
 
-    
     def convert_folder_to_searchable_pdf(
         self,
         folder_path: str,
@@ -140,9 +141,8 @@ vrne True če je bil vsaj en PDF uspešno ustvarjen
             for fut in as_completed(futures):
                 img_path, ok, msg, elapsed = fut.result()
                 original_name = Path(img_path).name
-                new_pdf_name = Path(msg).name
-
                 if ok:
+                    new_pdf_name = Path(msg).name
                     print(f"[OK]    {original_name} → {new_pdf_name} ({elapsed:.2f}s)")
                     _LOGGER.info("PDF created: %s → %s", original_name, new_pdf_name)
                     success_count += 1
@@ -151,7 +151,6 @@ vrne True če je bil vsaj en PDF uspešno ustvarjen
                     _LOGGER.error("Failed PDF for %s: %s", original_name, msg)
 
         return success_count > 0
-
 
     def get_optimal_workers(self) -> int:
         """Pick a sensible default number of processes based on CPU count."""
@@ -207,7 +206,7 @@ vrne True če je bil vsaj en PDF uspešno ustvarjen
 
         with ProcessPoolExecutor(max_workers=max_workers) as executor:
             future_to_file = {
-                executor.submit(process_image_worker, str(fp)): fp
+                executor.submit(process_image_worker, str(fp), self.tesseract_path): fp
                 for fp in image_files
             }
 
@@ -311,7 +310,6 @@ vrne True če je bil vsaj en PDF uspešno ustvarjen
         """Wrapper za testiranje ene slike (interno uporablja worker logiko)."""
         return process_image_worker(file_path, self.tesseract_path)
 
-
 # Worker func za model levl ProcessPoolExecutor 
 def process_image_worker(file_path, tesseract_path=None):
     """Worker function locen proces"""
@@ -347,17 +345,9 @@ def process_image_worker(file_path, tesseract_path=None):
         entity = extract_name_worker(text)
 
         new_name = FILENAME_TEMPLATE.format(date=date, entity=entity)
-        new_path = os.path.join(os.path.dirname(file_path), new_name)
-
-        # Handle file conflicts
-        if os.path.exists(new_path):
-            base, ext = os.path.splitext(new_path)
-            counter = 1
-            while os.path.exists(new_path) and counter <= 100:
-                new_path = f"{base}_{counter}{ext}"
-                counter += 1
-            if counter > 100:
-                new_path = f"{base}_{int(time.time()*1000)%10000}{ext}"
+        new_name = sanitize_filename(new_name)
+        new_path = Path(file_path).with_name(new_name)
+        new_path = ensure_unique_path(new_path)
 
         os.rename(file_path, new_path)
 

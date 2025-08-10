@@ -82,7 +82,9 @@ def main() -> None:
         if choice == "1":
             processor.process_folder_parallel(cfg.scan_folder, max_workers=cfg.max_workers)
         elif choice == "2":
-            processor.process_folder_parallel(cfg.scan_folder, max_workers=cfg.max_workers)
+            max_cpu = multiprocessing.cpu_count()
+            chosen = prompt_int("Koliko procesov želiš uporabiti?", cfg.max_workers, 1, max_cpu)
+            processor.process_folder_parallel(cfg.scan_folder, max_workers=chosen)
         elif choice == "3":
             processor.test_single_file(cfg.scan_folder)
         elif choice == "4":
