@@ -6,3 +6,7 @@ ocr_processor.log
 
 # Ignoriraj testni README dokument
 README_Testni_dokumenti.rtf
+
+# Ignoriraj Python cache
+bajocr/__pycache__/
+*.pyc
