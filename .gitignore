@@ -1,0 +1,8 @@
+# Ignoriraj mapo Testi
+Testi/
+
+# Ignoriraj log datoteko OCR
+ocr_processor.log
+
+# Ignoriraj testni README dokument
+README_Testni_dokumenti.rtf
