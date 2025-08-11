@@ -10,3 +10,6 @@ README_Testni_dokumenti.rtf
 # Ignoriraj Python cache
 bajocr/__pycache__/
 *.pyc
+
+# Ignoriraj konfiguracijsko datoteko
+config.json
