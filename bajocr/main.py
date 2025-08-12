@@ -13,7 +13,7 @@ setup_logging(log_level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def prompt_int(prompt: str, default: int, min_val: int = 1, max_val: Optional[int] = None) -> int:
-    """int z menu bounds."""
+    """Read an int within bounds from console."""
     while True:
         resp = input(f"{prompt} [{default}]: ").strip()
         if not resp:
@@ -27,7 +27,7 @@ def prompt_int(prompt: str, default: int, min_val: int = 1, max_val: Optional[in
             print(f"Vnesi število med {min_val} in {max_val or '∞'}.")
 
 def konfiguriraj(cfg: Config) -> Config:
-    """menu."""
+    """Config menu json nastavitve"""
     print("\n--- Konfiguriraj BajOCR ---")
     # Tesseract path
     path = input(f"Pot do Tesseract.exe [{cfg.tesseract_path or 'ni nastavljeno'}]: ").strip()
@@ -41,62 +41,84 @@ def konfiguriraj(cfg: Config) -> Config:
     max_cpu = multiprocessing.cpu_count()
     cfg.max_workers = prompt_int("Število procesov", cfg.max_workers, min_val=1, max_val=max_cpu)
     # OCR language
-    lang = input(f"Jezik Tesseract (npr. 'eng') [{cfg.ocr_lang}]: ").strip()
+    lang = input(f"Jezik Tesseract (npr. 'eng' ali 'slv+eng') [{cfg.ocr_lang}]: ").strip()
     if lang:
         cfg.ocr_lang = lang
     # Scan folder
     folder = input(f"Mapa za skeniranje [{cfg.scan_folder or 'ni nastavljena'}]: ").strip()
-    if folder and os.path.isdir(folder):
-        cfg.scan_folder = folder
-    elif folder:
-        print("Mapa ne obstaja, obdrži prejšnjo vrednost.")
+    if folder:
+        if os.path.isdir(folder):
+            cfg.scan_folder = folder
+        else:
+            print("Mapa ne obstaja, obdrži prejšnjo vrednost.")
+
     # Extra args
     extra = input(f"Dodatni argumenti za Tesseract (ločeni z vejico) [{','.join(cfg.extra_args)}]: ").strip()
     if extra:
         cfg.extra_args = list({arg.strip() for arg in extra.split(",") if arg.strip()})
+
     cfg.save()
     return cfg
 
-def main() -> None:
-    """glavna funkcija menia."""
-    cfg = Config.load()
+def build_processor(cfg: Config) -> BajOCR:
+    """Zgradi bajocr blok z config setingi"""
     pytesseract.pytesseract.tesseract_cmd = cfg.tesseract_path
-    processor = BajOCR(tesseract_path=cfg.tesseract_path)
+    return BajOCR(
+        tesseract_path=cfg.tesseract_path,
+        ocr_lang=cfg.ocr_lang,
+        extra_args=cfg.extra_args,
+    )
+def main() -> None:
+    """Glavna funkcija menija."""
+    cfg = Config.load()
+    processor = build_processor(cfg)
 
     while True:
         print("\nBajOCR PROCESSOR v1.0 (Optimized)")
         print("=" * 50)
         print(f"1. Procesiraj vse datoteke (mapa: {cfg.scan_folder or '[ni nastavljena]'})")
-        print(f"2. Procesiraj z izbiro števila procesov (trenutno: {cfg.max_workers})")
+        print(f"2. Shrani slike kot searchable PDF (posamezne datoteke)")
         print("3. Testiraj eno datoteko")
-        print("4. Prikaži sistemske informacije")
-        print(f"5. Nastavi pot do Tesseract (trenutno: {cfg.tesseract_path})")
-        print("6. Spremeni mapo za procesiranje")
-        print("7. Konfiguriraj")
-        print("8. Shrani slike kot searchable PDF (posamezne datoteke)")
+        print("4. Prikaži config.json")
+        print("5. Spremeni mapo datotek")
+        print(f"6. Konfiguriraj (vse nastavitve)")
+        print("7. Samodejno združi strani v dokumente (PRSTNI ODTIS)")  # NOVO
         print("0. Izhod")
         print("=" * 50)
-
-        choice = input("Vnesi izbiro (0-8): ").strip()
+        choice = input("Vnesi izbiro (0-7): ").strip()
 
         if choice == "1":
-            processor.process_folder_parallel(cfg.scan_folder, max_workers=cfg.max_workers)
+            if not cfg.scan_folder:
+                print("Najprej nastavi mapo za skeniranje (opcija 6).")
+            else:
+                processor.process_folder_parallel(cfg.scan_folder, max_workers=cfg.max_workers)
+
         elif choice == "2":
-            max_cpu = multiprocessing.cpu_count()
-            chosen = prompt_int("Koliko procesov želiš uporabiti?", cfg.max_workers, 1, max_cpu)
-            processor.process_folder_parallel(cfg.scan_folder, max_workers=chosen)
+            if not cfg.scan_folder:
+                print("Najprej nastavi mapo za skeniranje (opcija 6).")
+            else:
+                processor.convert_folder_to_searchable_pdf(
+                    folder_path=cfg.scan_folder,
+                    lang=processor.ocr_lang,
+                    extra_args=processor.extra_args,
+                    max_workers=cfg.max_workers
+                )
+
         elif choice == "3":
-            processor.test_single_file(cfg.scan_folder)
+            if not cfg.scan_folder:
+                print("Najprej nastavi mapo za skeniranje (opcija 6).")
+            else:
+                processor.test_single_file(cfg.scan_folder)
+
         elif choice == "4":
             print(f"CPU jeder: {multiprocessing.cpu_count()}")
             print(f"Priporočeno procesov: {processor.get_optimal_workers()}")
             print(f"Tesseract pot: {cfg.tesseract_path}")
             print(f"Trenutna mapa: {cfg.scan_folder}")
-            print(f"Jezik OCR: {cfg.ocr_lang}")
-            print(f"Dodatni args: {cfg.extra_args}")
+            print(f"Jezik OCR: {processor.ocr_lang}")
+            print(f"Dodatni args: {processor.extra_args}")
+
         elif choice == "5":
-            cfg = konfiguriraj(cfg)
-        elif choice == "6":
             new_folder = input("Vnesi novo pot do mape: ").strip()
             if os.path.isdir(new_folder):
                 cfg.scan_folder = new_folder
@@ -104,20 +126,27 @@ def main() -> None:
                 print("Mapa uspešno nastavljena!")
             else:
                 print("Mapa ne obstaja!")
-        elif choice == "7":
+
+        elif choice == "6":
             cfg = konfiguriraj(cfg)
-        elif choice == "8":
-            processor.convert_folder_to_searchable_pdf(
-                folder_path=cfg.scan_folder,
-                lang=cfg.ocr_lang,
-                extra_args=cfg.extra_args,
-                max_workers=cfg.max_workers
-            )
+            processor = build_processor(cfg)
+
+        elif choice == "7":
+            if not cfg.scan_folder:
+                print("Najprej nastavi mapo za skeniranje (opcija 6).")
+            else:
+                processor.group_folder_to_documents(
+                    folder_path=cfg.scan_folder,
+                    lang=processor.ocr_lang,
+                    extra_args=processor.extra_args,
+                    max_workers=cfg.max_workers
+                )
+
         elif choice == "0":
-            print("Nasvidenje!")
+            print("Zapri")
             break
         else:
-            print("Neveljavna izbira!")
+            print("Neveljavno")
 
         input("\nPritisni Enter za nadaljevanje...")
 
