@@ -463,11 +463,15 @@ def analyze_and_pdf_worker(file_path, tesseract_path=None, lang="eng", extra_arg
             text = pytesseract.image_to_string(prep, lang=lang, config=" ".join(extra_args))
 
             doc_type = detect_doc_type_worker(text)
-            title   = extract_doc_title_worker(text)
+            title = extract_doc_title_worker(text)
             parties = extract_parties_worker(text)
-            sig     = header_signature_worker(text)
-            entity  = extract_name_worker(text) or (parties or "NEZNANO_IME")
-            date    = extract_date_with_targeted_ocr(file_path, text, lang, extra_args)
+            sig = header_signature_worker(text)
+
+            entity = extract_name_worker(text)
+            if not entity or entity == "NEZNANO_IME":
+                entity = parties or "NEZNANO_IME"
+
+            date = extract_date_with_targeted_ocr(file_path, text, lang, extra_args)
             group_id = _normalize_key(f"{doc_type}__{title}__{parties or entity}__{sig}")
 
             # header visual hash
